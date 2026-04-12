@@ -1,0 +1,365 @@
+/* Contenedor general */
+.dashboard-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #e5e7eb;
+  padding: 20px;
+}
+
+/* Tarjeta principal */
+.dashboard-card {
+  width: 100%;
+  max-width: 900px;
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* PC — cambia a horizontal */
+@media (min-width: 900px) {
+  .dashboard-card {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 60px;
+  }
+}
+
+.dashboard-title {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.dashboard-btn {
+  background: #ef4444;
+  color: white;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* ========================
+   DISEÑO MÓVIL - NAV INFERIOR
+   ======================== */
+
+/* Breakpoint para móvil */
+@media (max-width: 767px) {
+  /* Contenedor móvil */
+  .dashboard-mobile-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: #f3f4f6;
+  }
+
+  /* Header móvil */
+  .dashboard-header-mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .dashboard-header-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .dashboard-header-user {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #059669 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  /* Contenido principal */
+  .dashboard-content-mobile {
+    flex: 1;
+    padding: 20px 16px;
+    padding-bottom: 100px;
+    overflow-y: auto;
+  }
+
+  /* Cards más compactas */
+  .dashboard-card-mobile {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 16px;
+  }
+
+  .dashboard-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 16px;
+  }
+
+  /* Formulario móvil */
+  .dashboard-form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .dashboard-input-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .dashboard-input-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 2px solid #e5e7eb;
+    font-size: 15px;
+    background: #f9fafb;
+  }
+
+  /* Botón primary */
+  .dashboard-btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #059669 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  .dashboard-btn-primary:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+
+  /* Stats grid - 1 columna en móvil */
+  .dashboard-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .dashboard-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dashboard-stat-icon.blue { background: #dbeafe; color: #1e40af; }
+  .dashboard-stat-icon.green { background: #d1fae5; color: #059669; }
+  .dashboard-stat-icon.orange { background: #fef3c7; color: #d97706; }
+
+  .dashboard-stat-label {
+    font-size: 12px;
+    color: #6b7280;
+  }
+
+  .dashboard-stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  /* Solicitudes list */
+  .dashboard-solicitudes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .dashboard-solicitud-item {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .dashboard-solicitud-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .dashboard-solicitud-id {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  /* Badges */
+  .dashboard-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .dashboard-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .dashboard-badge.approved {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .dashboard-badge.rejected {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  /* Navigation bar inferior */
+  .dashboard-nav-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 8px 20px;
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  }
+
+  .dashboard-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 11px;
+    transition: all 0.2s;
+  }
+
+  .dashboard-nav-item.active {
+    background: linear-gradient(135deg, #1e3a8a 0%, #059669 100%);
+    color: white;
+  }
+
+  .dashboard-nav-item:active {
+    transform: scale(0.95);
+  }
+
+  .dashboard-nav-icon {
+    font-size: 20px;
+  }
+
+  /* Logout button */
+  .dashboard-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid #dc2626;
+    background: transparent;
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  /* Turno actual card */
+  .dashboard-turno-actual {
+    background: #f0fdf4;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .dashboard-turno-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #059669;
+  }
+
+  /* File upload */
+  .dashboard-file-upload {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: white;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #6b7280;
+    cursor: pointer;
+  }
+
+  .dashboard-upload-btn {
+    padding: 8px 14px;
+    background: #059669;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Hide desktop sidebar on mobile */
+  .dashboard-sidebar {
+    display: none;
+  }
+
+  .dashboard-main-content {
+    margin-left: 0;
+  }
+}

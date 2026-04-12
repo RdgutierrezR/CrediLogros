@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+ENV/
+env/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Node_modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+
+# React
+frontend-credito/dist/
+frontend-credito/.parcel-cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads
+uploads/
+!uploads/.gitkeep
+
+# Database
+*.db
+*.sqlite
+
+# Logs
+*.log
