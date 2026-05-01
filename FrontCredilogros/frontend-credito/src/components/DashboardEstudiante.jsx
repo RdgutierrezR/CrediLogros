@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { API_URL } from "../config";
+import ChatFlotante from "./ChatFlotante";
+
 export default function DashboardEstudiante({ usuario, onLogout }) {
   const [activeTab, setActiveTab] = useState("solicitudes");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -221,9 +223,10 @@ export default function DashboardEstudiante({ usuario, onLogout }) {
       </div>
     );
   }
-  return isMobile ? (
-    // VERSIÓN MÓVIL
-    <div className="dashboard-mobile-container">
+  return (
+    <>
+      {isMobile ? (
+        <div className="dashboard-mobile-container">
       {/* Header */}
       <header className="dashboard-header-mobile">
         <h1 className="dashboard-header-title">
@@ -651,6 +654,9 @@ export default function DashboardEstudiante({ usuario, onLogout }) {
         </div>
       </main>
     </div>
+    )}
+    <ChatFlotante />
+    </>
   );
 }
 const styles = {
