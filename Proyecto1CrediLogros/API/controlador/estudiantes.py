@@ -10,45 +10,51 @@ def listar_estudiantes():
 def obtener_estudiante(id_estudiante):
     return Estudiante.query.get(id_estudiante)
 
-# Crear
-def crear_estudiante(id_usuario, nombre, cedula, telefono=None, direccion=None):
-    # Validar que el usuario exista
-    usuario = Usuario.query.get(id_usuario)
-    if not usuario:
-        raise ValueError("El usuario asociado no existe")
+# Obtener por Cédula
+def obtener_por_cedula(cedula):
+    return Estudiante.query.filter_by(cedula=cedula).first()
 
-    # Crear estudiante usando el mismo id que el usuario
-    nuevo = Estudiante(
-        id_estudiante=id_usuario,
-        nombre=nombre,
-        cedula=cedula,
-        telefono=telefono,
-        direccion=direccion
-    )
+# Buscar o crear estudiante rápido (sin usuario)
+def buscar_o_crear_estudiante(cedula, nombre=None, telefono=None, direccion=None):
+    # Buscar si ya existe
+    existente = Estudiante.query.filter_by(cedula=cedula).first()
+    if existente:
+        return existente, False  # False = no se creó, ya existía
+    
+    # Buscar si hay un usuario disponible sin estudiante
+    # O crear nuevo usuario + estudiante
+    usuario_existente = Usuario.query.filter(
+        ~Usuario.id_usuario.in_(db.session.query(Estudiante.id_estudiante))
+    ).first()
+    
+    if usuario_existente:
+        # Usar usuario existente
+        nuevo = Estudiante(
+            id_estudiante=usuario_existente.id_usuario,
+            nombre=nombre,
+            cedula=cedula,
+            telefono=telefono,
+            direccion=direccion
+        )
+    else:
+        # Crear nuevo usuario
+        nuevo_usuario = Usuario(
+            nombre=nombre or f"Est_{cedula}",
+            correo=f"est_{cedula}@credilogros.local",
+            contrasena=cedula,  # Temporal
+            rol_id=1  # Estudiante
+        )
+        db.session.add(nuevo_usuario)
+        db.session.flush()
+        
+        nuevo = Estudiante(
+            id_estudiante=nuevo_usuario.id_usuario,
+            nombre=nombre,
+            cedula=cedula,
+            telefono=telefono,
+            direccion=direccion
+        )
+    
     db.session.add(nuevo)
     db.session.commit()
-    return nuevo
-
-# Actualizar
-def actualizar_estudiante(id_estudiante, nombre=None, cedula=None, telefono=None, direccion=None):
-    estudiante = Estudiante.query.get(id_estudiante)
-    if estudiante:
-        if nombre:
-            estudiante.nombre = nombre
-        if cedula:
-            estudiante.cedula = cedula
-        if telefono:
-            estudiante.telefono = telefono
-        if direccion:
-            estudiante.direccion = direccion
-        db.session.commit()
-    return estudiante
-
-# Eliminar
-def eliminar_estudiante(id_estudiante):
-    estudiante = Estudiante.query.get(id_estudiante)
-    if estudiante:
-        db.session.delete(estudiante)
-        db.session.commit()
-        return True
-    return False
+    return nuevo, True  # True = se creó nuevo

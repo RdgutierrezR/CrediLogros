@@ -202,6 +202,7 @@ CREATE TABLE `solicitudes_credito` (
   `estado` enum('pendiente','en estudio','aprobado','rechazado') DEFAULT 'pendiente',
   `monto_solicitado` decimal(12,2) DEFAULT NULL,
   `monto_aprobado` decimal(12,2) DEFAULT NULL,
+  `tipo_credito` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id_solicitud`),
   KEY `id_estudiante` (`id_estudiante`),
   CONSTRAINT `solicitudes_credito_ibfk_1` FOREIGN KEY (`id_estudiante`) REFERENCES `estudiantes` (`id_estudiante`)

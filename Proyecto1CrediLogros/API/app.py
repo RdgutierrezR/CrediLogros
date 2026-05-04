@@ -2,7 +2,7 @@ from flask import Flask, send_from_directory
 from configuracion import Config
 from database import db
 from flask_jwt_extended import JWTManager
-from flask_cors import CORS   # <--- IMPORTANTE
+from flask_cors import CORS
 from modelo.usuarios import Usuario
 from modelo.estudiantes import Estudiante
 import os
@@ -40,8 +40,10 @@ def create_app():
     from rutas.documentos import documentos_bp
     from rutas.firma import firmas_bp
     from rutas.analisis_credito import analisis_bp
+    from rutas.chatbot import chatbot_bp
     
     app.register_blueprint(analisis_bp)
+    app.register_blueprint(chatbot_bp)
     app.register_blueprint(firmas_bp)
     app.register_blueprint(documentos_bp)
     app.register_blueprint(turnos_bp)  
@@ -56,4 +58,4 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app() 
-    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
+    app.run(host='0.0.0.0', port=5002, debug=True, use_reloader=False)

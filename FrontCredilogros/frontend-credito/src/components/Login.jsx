@@ -1,8 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { API_URL } from "../config";
 export default function Login({ onLogin }) {
-  const [modo, setModo] = useState("login");
-  const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [error, setError] = useState("");
@@ -31,31 +30,6 @@ export default function Login({ onLogin }) {
       setCargando(false);
     }
   };
-  const handleRegistro = async (e) => {
-    e.preventDefault();
-    setError("");
-    setCargando(true);
-    try {
-      const res = await fetch(`${API_URL}/usuarios/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, correo, contrasena, rol_id: 1 }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.mensaje || "No se pudo registrar");
-        setCargando(false);
-        return;
-      }
-      alert("Usuario creado exitosamente. Ahora puedes iniciar sesión.");
-      setModo("login");
-      setCargando(false);
-    } catch (err) {
-      console.error(err);
-      setError("Error de conexión");
-      setCargando(false);
-    }
-  };
   return (
     <div style={styles.wrapper}>
       <div style={styles.backgroundPattern}></div>
@@ -71,9 +45,7 @@ export default function Login({ onLogin }) {
           <h1 style={styles.title}>CrediLogros</h1>
           <p style={styles.subtitle}>Sistema de Gestión de Créditos</p>
         </div>
-        <h2 style={styles.formTitle}>
-          {modo === "login" ? "Bienvenido de nuevo" : "Crear cuenta"}
-        </h2>
+        <h2 style={styles.formTitle}>Ingreso Analistas</h2>
         {error && (
           <div style={styles.errorBox}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -84,26 +56,7 @@ export default function Login({ onLogin }) {
             {error}
           </div>
         )}
-        <form onSubmit={modo === "login" ? handleLogin : handleRegistro} style={styles.form}>
-          {modo === "registro" && (
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Nombre completo</label>
-              <div style={styles.inputWrapper}>
-                <svg style={styles.inputIcon} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Juan Pérez"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  style={styles.input}
-                  required
-                />
-              </div>
-            </div>
-          )}
+        <form onSubmit={handleLogin} style={styles.form}>
           <div style={styles.inputGroup}>
             <label style={styles.label}>Correo electrónico</label>
             <div style={styles.inputWrapper}>
@@ -141,7 +94,7 @@ export default function Login({ onLogin }) {
           <button type="submit" style={cargando ? styles.buttonLoading : styles.button} disabled={cargando}>
             {cargando ? (
               <div style={styles.spinner}></div>
-            ) : modo === "login" ? (
+            ) : (
               <>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
@@ -150,25 +103,18 @@ export default function Login({ onLogin }) {
                 </svg>
                 Iniciar Sesión
               </>
-            ) : (
-              <>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                  <circle cx="8.5" cy="7" r="4"/>
-                  <line x1="20" y1="8" x2="20" y2="14"/>
-                  <line x1="23" y1="11" x2="17" y2="11"/>
-                </svg>
-                Crear Cuenta
-              </>
             )}
           </button>
         </form>
-        <button style={styles.switch} onClick={() => { setModo(modo === "login" ? "registro" : "login"); setError(""); }}>
-          {modo === "login" ? "¿No tienes cuenta? " : "¿Ya tienes cuenta? "}
-          <span style={styles.switchHighlight}>
-            {modo === "login" ? "Crear una" : "Iniciar sesión"}
-          </span>
-        </button>
+        <Link to="/estudiante" style={styles.qrBtnLink}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+          </svg>
+          Acceder como Estudiante (QR)
+        </Link>
       </div>
     </div>
   );
@@ -319,18 +265,36 @@ const styles = {
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
   },
-  switch: {
+  qrBtn: {
     marginTop: "24px",
-    textAlign: "center",
-    background: "transparent",
-    border: "none",
-    color: "#6b7280",
-    fontSize: "14px",
-    width: "100%",
+    padding: "14px",
+    background: "#f0fdf4",
+    color: "#059669",
+    border: "2px solid #059669",
+    borderRadius: "12px",
     cursor: "pointer",
-  },
-  switchHighlight: {
-    color: "#1e3a8a",
     fontWeight: "600",
+    fontSize: "15px",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+  },
+  qrBtnLink: {
+    marginTop: "24px",
+    padding: "14px",
+    background: "#f0fdf4",
+    color: "#059669",
+    border: "2px solid #059669",
+    borderRadius: "12px",
+    fontWeight: "600",
+    fontSize: "15px",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    textDecoration: "none",
   },
 };

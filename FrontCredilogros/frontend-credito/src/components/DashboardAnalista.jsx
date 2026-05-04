@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { API_URL } from "../config";
+import { API_URL, FRONTEND_URL } from "../config";
+import QRModal from "./QRModal";
+import { formatearCOP } from "../utils/formatoMoneda";
 export default function DashboardAnalista({ usuario, onLogout }) {
   const [activeTab, setActiveTab] = useState("solicitudes");
   const [solicitudes, setSolicitudes] = useState([]);
@@ -8,7 +10,14 @@ export default function DashboardAnalista({ usuario, onLogout }) {
   const [todosTurnos, setTodosTurnos] = useState([]);
   const [detalle, setDetalle] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
   const [cargando, setCargando] = useState(true);
+  const [qrUrl, setQrUrl] = useState("");
+
+  const generarQR = () => {
+    setQrUrl(`${FRONTEND_URL}/estudiante`);
+    setShowQRModal(true);
+  };
   // Stats
   const pendientes = solicitudes.filter((s) => s.estado === "pendiente").length;
   const aprobados = solicitudes.filter((s) => s.estado === "aprobado").length;
@@ -123,6 +132,12 @@ export default function DashboardAnalista({ usuario, onLogout }) {
             </svg>
             Gestión de Turnos
           </button>
+          <button style={activeTab === "ajustes" ? styles.navItemActive : styles.navItem} onClick={() => setActiveTab("ajustes")}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+            </svg>
+            Ajustes
+          </button>
         </nav>
         <div style={styles.sidebarFooter}>
           <button style={styles.logoutBtn} onClick={onLogout}>
@@ -138,7 +153,7 @@ export default function DashboardAnalista({ usuario, onLogout }) {
         <header style={styles.header}>
           <div>
             <h1 style={styles.headerTitle}>
-              {activeTab === "solicitudes" ? "Solicitudes de Crédito" : "Gestión de Turnos"}
+              {activeTab === "solicitudes" ? "Solicitudes de Crédito" : activeTab === "turnos" ? "Gestión de Turnos" : "Ajustes"}
             </h1>
             <p style={styles.headerSubtitle}>Panel de Analista - {usuario.nombre}</p>
           </div>
@@ -205,7 +220,7 @@ export default function DashboardAnalista({ usuario, onLogout }) {
                         .map((s) => (
                           <tr key={s.id_solicitud} style={styles.tr}>
                             <td style={styles.td}>#{s.id_solicitud}</td>
-                            <td style={styles.td}>${s.monto_solicitado}</td>
+                            <td style={styles.td}>{formatearCOP(s.monto_solicitado)}</td>
                             <td style={styles.td}>{s.fecha_solicitud}</td>
                             <td style={styles.td}>
                               <span style={styles.badgePending}>{s.estado}</span>
@@ -281,6 +296,27 @@ export default function DashboardAnalista({ usuario, onLogout }) {
               </div>
             </div>
           )}
+          {/* TAB: AJUSTES */}
+          {activeTab === "ajustes" && (
+            <div style={styles.card}>
+              <h2 style={styles.cardTitle}>QR de Acceso Estudiantil</h2>
+              <p style={styles.settingDesc}>
+                Los estudiantes pueden escanear este código QR para acceder directamente a la pantalla de identificación sin necesidad de escribir su cédula.
+              </p>
+              <button 
+                style={styles.qrButton} 
+                onClick={generarQR}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="3" width="7" height="7"/>
+                  <rect x="14" y="3" width="7" height="7"/>
+                  <rect x="3" y="14" width="7" height="7"/>
+                  <rect x="14" y="14" width="7" height="7"/>
+                </svg>
+                Mostrar QR
+              </button>
+            </div>
+          )}
         </div>
       </main>
       {/* Modal */}
@@ -301,7 +337,7 @@ export default function DashboardAnalista({ usuario, onLogout }) {
               </div>
               <div style={styles.modalSection}>
                 <h3 style={styles.modalSectionTitle}>Datos de la Solicitud</h3>
-                <p><strong>Monto:</strong> ${detalle.solicitud.monto_solicitado}</p>
+                <p><strong>Monto:</strong> {formatearCOP(detalle.solicitud.monto_solicitado)}</p>
                 <p><strong>Estado:</strong> {detalle.solicitud.estado}</p>
                 <p><strong>Fecha:</strong> {detalle.solicitud.fecha_solicitud}</p>
               </div>
@@ -337,6 +373,13 @@ export default function DashboardAnalista({ usuario, onLogout }) {
             </div>
           </div>
         </div>
+      )}
+      {/* QR Modal */}
+      {showQRModal && qrUrl && (
+        <QRModal 
+          url={qrUrl} 
+          onClose={() => setShowQRModal(false)} 
+        />
       )}
     </div>
   );
@@ -407,4 +450,6 @@ const styles = {
   docLink: { display: "flex", alignItems: "center", gap: "8px", padding: "12px", background: "#f9fafb", borderRadius: "8px", textDecoration: "none", color: "#1e3a8a", fontSize: "14px" },
   modalFooter: { padding: "16px 24px", borderTop: "1px solid #e5e7eb", display: "flex", justifyContent: "flex-end" },
   closeModalBtn: { padding: "10px 20px", background: "#6b7280", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: "600", color: "white", cursor: "pointer" },
+  settingDesc: { fontSize: "14px", color: "#6b7280", marginBottom: "20px", lineHeight: "1.5" },
+  qrButton: { display: "inline-flex", alignItems: "center", gap: "10px", padding: "14px 24px", background: "linear-gradient(135deg, #1e3a8a 0%, #059669 100%)", border: "none", borderRadius: "12px", fontSize: "15px", fontWeight: "600", color: "white", cursor: "pointer" },
 };
