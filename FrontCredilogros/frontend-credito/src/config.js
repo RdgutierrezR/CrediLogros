@@ -1,11 +1,8 @@
 const getApiUrl = () => {
-  const hostname = window.location.hostname;
-  
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:5002/api';
+  if (import.meta.env.PROD) {
+    return 'https://credilogros.onrender.com/api';
   }
-  
-  return `http://${hostname}:5002/api`;
+  return 'http://localhost:5002/api';
 };
 
 const CONFIG = {
