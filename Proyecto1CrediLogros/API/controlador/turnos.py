@@ -1,6 +1,7 @@
 from flask import jsonify, request
 from database import db
 from modelo.turnos import Turno
+from modelo.solicitud_credito import SolicitudCredito
 from datetime import datetime
 
 # Crear turno
@@ -64,7 +65,11 @@ def actualizar_turno(id_turno, data):
             turno.hora_turno = datetime.strptime(data["hora_turno"], "%H:%M:%S").time()
 
         if "estado" in data:
-            turno.estado = data["estado"]
+            estado_recibido = data["estado"]
+            if estado_recibido == "atendido":
+                turno.estado = "completado"
+            else:
+                turno.estado = estado_recibido
 
         db.session.commit()
 
@@ -109,14 +114,15 @@ def obtener_turnos_cola():
 # Avanzar turno
 def avanzar_turno():
     try:
-        # 1. Turno actual en atención
         turno_actual = Turno.query.filter_by(estado="en atención").first()
 
-        # Si existe turno en atención → marcarlo como completado
         if turno_actual:
+            solicitud = SolicitudCredito.query.get(turno_actual.id_solicitud)
+            if not solicitud:
+                db.session.rollback()
+                return jsonify({"error": f"La solicitud #{turno_actual.id_solicitud} asociada al turno #{turno_actual.id_turno} ya no existe. Elimine el turno huérfano."}), 404
             turno_actual.estado = "completado"
 
-        # 2. Buscar el siguiente turno pendiente
         siguiente = (
             Turno.query
             .filter_by(estado="pendiente")
@@ -124,11 +130,13 @@ def avanzar_turno():
             .first()
         )
 
-        # Si hay siguiente turno → ponerlo en atención
         if siguiente:
+            solicitud = SolicitudCredito.query.get(siguiente.id_solicitud)
+            if not solicitud:
+                db.session.rollback()
+                return jsonify({"error": f"La solicitud #{siguiente.id_solicitud} asociada al turno #{siguiente.id_turno} ya no existe. Elimine el turno huérfano."}), 404
             siguiente.estado = "en atención"
 
-        # Si no hay más turnos, igual guardar el cambio del último
         db.session.commit()
 
         return jsonify({

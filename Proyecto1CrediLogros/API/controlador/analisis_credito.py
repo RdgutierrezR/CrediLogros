@@ -1,5 +1,5 @@
 from modelo.analisis_credito import AnalisisCredito
-from app import db
+from database import db
 
 def crear_analisis(data):
     nuevo = AnalisisCredito(

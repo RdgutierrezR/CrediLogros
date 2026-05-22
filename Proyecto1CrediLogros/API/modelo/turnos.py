@@ -6,13 +6,14 @@ class Turno(db.Model):
     __tablename__ = "turnos"
 
     id_turno = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_solicitud = db.Column(db.Integer, db.ForeignKey("solicitudes_credito.id_solicitud"), nullable=False)
+    id_solicitud = db.Column(db.Integer, db.ForeignKey("solicitudes_credito.id_solicitud"), nullable=False, index=True)
     fecha_turno = db.Column(db.Date, nullable=False)
     hora_turno = db.Column(db.Time, nullable=False)
 
     estado = db.Column(
         Enum("pendiente", "en atención", "completado", "cancelado", name="estado_turno"),
-        default="pendiente"
+        default="pendiente",
+        index=True
     )
 
     solicitud = db.relationship("SolicitudCredito", backref="turnos", lazy=True)

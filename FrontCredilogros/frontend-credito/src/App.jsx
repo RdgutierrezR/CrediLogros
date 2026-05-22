@@ -12,8 +12,9 @@ console.log("App.jsx cargado");
 
 async function buscarTurnoActivo(idEstudiante) {
   try {
-    const res = await fetch(`${API_URL}/solicitudes`);
-    const solicitudes = await res.json();
+    const res = await fetch(`${API_URL}/solicitudes?paginated=false`);
+    const data = await res.json();
+    const solicitudes = Array.isArray(data) ? data : data.items || [];
     
     console.log("Solicitudes:", solicitudes);
     console.log("Buscando para id_estudiante:", idEstudiante);
@@ -26,8 +27,9 @@ async function buscarTurnoActivo(idEstudiante) {
     console.log("Solicitud activa encontrada:", solActiva);
     
     if (solActiva) {
-      const resTurnos = await fetch(`${API_URL}/turnos/`);
-      const turnos = await resTurnos.json();
+      const resTurnos = await fetch(`${API_URL}/turnos/?paginated=false`);
+      const turnosData = await resTurnos.json();
+      const turnos = Array.isArray(turnosData) ? turnosData : turnosData.items || [];
       
       console.log("Turnos:", turnos);
       
@@ -71,7 +73,11 @@ function FlujoEstudiante() {
   };
 
   const handleSolicitudCreada = (data) => {
-    setDataSolicitud({ ...data, estudiante });
+    setDataSolicitud({ 
+      solicitud: data.solicitud, 
+      turno: data.turno_asignado, 
+      estudiante 
+    });
   };
 
   if (buscandoTurno) {
@@ -137,7 +143,28 @@ export default function App() {
   };
 
   if (cargando) {
-    return null;
+    return (
+      <div style={{ 
+        minHeight: "100vh", 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center",
+        background: "#f3f4f6"
+      }}>
+        <div style={{ textAlign: "center", color: "#6b7280" }}>
+          <div style={{ 
+            width: "40px", 
+            height: "40px", 
+            border: "3px solid #e5e7eb",
+            borderTopColor: "#1e3a8a",
+            borderRadius: "50%",
+            animation: "spin 1s linear infinite",
+            margin: "0 auto 16px"
+          }}></div>
+          <p>Cargando...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -5,9 +5,9 @@ class FirmaDigital(db.Model):
     __tablename__ = "firmas_digitales"
 
     id_firma = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_documento = db.Column(db.Integer, db.ForeignKey("documentos.id_documento"), nullable=False)
-    id_estudiante = db.Column(db.Integer, db.ForeignKey("estudiantes.id_estudiante"), nullable=False)
-    firma_hash = db.Column(db.String(255), nullable=False)
+    id_documento = db.Column(db.Integer, db.ForeignKey("documentos.id_documento"), nullable=False, index=True)
+    id_estudiante = db.Column(db.Integer, db.ForeignKey("estudiantes.id_estudiante"), nullable=False, index=True)
+    firma_hash = db.Column(db.String(255), nullable=False, index=True)
     fecha_firma = db.Column(db.DateTime, default=datetime.utcnow)
 
     documento = db.relationship("Documento", backref="firmas", lazy=True)

@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from modelo.documentos import Documento
 from controlador.documentos import (
     crear_documento,
     listar_documentos,
@@ -28,6 +29,26 @@ def subir_documento_route():
 # ----------------------------------------------------
 @documentos_bp.route("/", methods=["GET"])
 def listar_documentos_route():
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 20, type=int)
+    per_page = min(per_page, 100)
+    paginated = request.args.get("paginated", "true").lower() == "true"
+    id_solicitud = request.args.get("id_solicitud", type=int)
+    
+    if paginated:
+        query = Documento.query
+        if id_solicitud:
+            query = query.filter_by(id_solicitud=id_solicitud)
+        query = query.order_by(Documento.id_documento.desc())
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        return {
+            "items": [d.to_dict() for d in pagination.items],
+            "total": pagination.total,
+            "page": page,
+            "per_page": per_page,
+            "pages": pagination.pages
+        }, 200
+    
     return listar_documentos()
 
 

@@ -40,28 +40,7 @@ export default function SolicitudCredito({ estudiante, onSolicitudCreada }) {
       const data = await res.json();
 
       if (res.ok) {
-        const solicitud = data.solicitud || data;
-        
-        const resTurno = await fetch(`${API_URL}/turnos/`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
-          },
-          body: JSON.stringify({
-            id_solicitud: parseInt(solicitud.id_solicitud),
-            fecha_turno: new Date().toISOString().split("T")[0],
-            hora_turno: new Date().toTimeString().split(" ")[0].slice(0, 5) + ":00",
-            estado: "pendiente",
-          }),
-        });
-        
-        let turno = null;
-        if (resTurno.ok) {
-          turno = await resTurno.json();
-        }
-
-        onSolicitudCreada({ solicitud, turno });
+        onSolicitudCreada(data);
       } else {
         setError(data.error || "Error al crear solicitud");
       }

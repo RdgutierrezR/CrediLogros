@@ -7,7 +7,7 @@ class Usuario(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     correo = db.Column(db.String(100), unique=True, nullable=False)
     contrasena = db.Column(db.String(255), nullable=False)
-    rol_id = db.Column(db.Integer, db.ForeignKey("roles.id_rol"), nullable=False)
+    rol_id = db.Column(db.Integer, db.ForeignKey("roles.id_rol"), nullable=False, index=True)
 
     def to_dict(self):
         return {

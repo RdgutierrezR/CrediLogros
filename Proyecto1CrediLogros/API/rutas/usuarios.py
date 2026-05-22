@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from modelo.usuarios import Usuario
 from controlador import usuarios
 from datetime import timedelta
 
@@ -7,9 +8,24 @@ usuarios_bp = Blueprint("usuarios", __name__, url_prefix="/api/usuarios")
 
 # -------------------- CRUD USUARIOS --------------------
 
-# GET: Listar todos
 @usuarios_bp.route("/", methods=["GET"])
 def listar():
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 20, type=int)
+    per_page = min(per_page, 100)
+    paginated = request.args.get("paginated", "true").lower() == "true"
+    
+    if paginated:
+        query = Usuario.query.order_by(Usuario.id_usuario.desc())
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        return {
+            "items": [u.to_dict() for u in pagination.items],
+            "total": pagination.total,
+            "page": page,
+            "per_page": per_page,
+            "pages": pagination.pages
+        }, 200
+    
     lista = usuarios.listar_usuarios()
     return jsonify([u.to_dict() for u in lista])
 

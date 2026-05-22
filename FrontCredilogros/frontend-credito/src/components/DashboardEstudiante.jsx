@@ -32,10 +32,11 @@ export default function DashboardEstudiante({ usuario, onLogout }) {
   useEffect(() => {
     const fetchEstudiante = async () => {
       try {
-        const res = await fetch(`${API_URL}/estudiantes/`);
+        const res = await fetch(`${API_URL}/estudiantes/?paginated=false`);
         const data = await res.json();
+        const estudiantes = Array.isArray(data) ? data : data.items || [];
         const idUsuarioActual = parseInt(usuario.id_usuario);
-        const miEstudiante = data.find((e) => parseInt(e.id_estudiante) === idUsuarioActual);
+        const miEstudiante = estudiantes.find((e) => parseInt(e.id_estudiante) === idUsuarioActual);
         if (miEstudiante) {
           setEstudiante(miEstudiante);
           setFormEstudiante({
@@ -58,10 +59,11 @@ export default function DashboardEstudiante({ usuario, onLogout }) {
     if (!estudiante) return;
     const fetchSolicitudes = async () => {
       try {
-        const res = await fetch(`${API_URL}/solicitudes`);
+        const res = await fetch(`${API_URL}/solicitudes?paginated=false`);
         const data = await res.json();
+        const todasSolicitudes = Array.isArray(data) ? data : data.items || [];
         const idEstudianteActual = parseInt(estudiante.id_estudiante);
-        const misSolicitudes = data.filter((s) => parseInt(s.id_estudiante) === idEstudianteActual);
+        const misSolicitudes = todasSolicitudes.filter((s) => parseInt(s.id_estudiante) === idEstudianteActual);
         setSolicitudes(misSolicitudes);
       } catch (err) {
         console.error(err);
@@ -74,11 +76,13 @@ export default function DashboardEstudiante({ usuario, onLogout }) {
     if (!solicitudes.length) return;
     const fetchTurnos = async () => {
       try {
-        const resActual = await fetch(`${API_URL}/turnos/?estado=en atención`);
+        const resActual = await fetch(`${API_URL}/turnos/?estado=${encodeURIComponent("en atención")}`);
         const turnoActualData = await resActual.json();
-        setTurnoActual(turnoActualData[0] || null);
+        const actualData = Array.isArray(turnoActualData) ? turnoActualData : turnoActualData.items || [];
+        setTurnoActual(actualData[0] || null);
         const resCola = await fetch(`${API_URL}/turnos/cola`);
-        const cola = await resCola.json();
+        const colaData = await resCola.json();
+        const cola = Array.isArray(colaData) ? colaData : colaData.items || [];
         const idsSolicitudes = solicitudes.map((s) => s.id_solicitud);
         const miTurno = cola.find((t) => idsSolicitudes.includes(t.id_solicitud)) || null;
         setTurnoAsignado(miTurno);

@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from modelo.analisis_credito import AnalisisCredito
 from controlador import analisis_credito
 
 analisis_bp = Blueprint("analisis_bp", __name__, url_prefix="/api/analisis")
@@ -9,8 +10,31 @@ def crear():
     nuevo = analisis_credito.crear_analisis(data)
     return jsonify({"id": nuevo.id_analisis, "mensaje": "Análisis creado correctamente"}), 201
 
+
 @analisis_bp.route("/", methods=["GET"])
 def listar():
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 20, type=int)
+    per_page = min(per_page, 100)
+    paginated = request.args.get("paginated", "true").lower() == "true"
+    
+    if paginated:
+        query = AnalisisCredito.query.order_by(AnalisisCredito.id_analisis.desc())
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        return {
+            "items": [{
+                "id_analisis": a.id_analisis,
+                "id_solicitud": a.id_solicitud,
+                "analista_id": a.analista_id,
+                "resultado": a.resultado,
+                "fecha_analisis": a.fecha_analisis
+            } for a in pagination.items],
+            "total": pagination.total,
+            "page": page,
+            "per_page": per_page,
+            "pages": pagination.pages
+        }, 200
+    
     lista = analisis_credito.obtener_analisis()
     return jsonify([
         {

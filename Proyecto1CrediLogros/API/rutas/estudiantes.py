@@ -1,11 +1,29 @@
 from flask import Blueprint, request, jsonify
+from database import db
+from modelo.estudiantes import Estudiante
 from controlador import estudiantes
 
 estudiantes_bp = Blueprint("estudiantes", __name__, url_prefix="/api/estudiantes")
 
-# GET: Listar todos
+
 @estudiantes_bp.route("/", methods=["GET"])
 def listar():
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 20, type=int)
+    per_page = min(per_page, 100)
+    paginated = request.args.get("paginated", "true").lower() == "true"
+    
+    if paginated:
+        query = Estudiante.query.order_by(Estudiante.id_estudiante.desc())
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        return jsonify({
+            "items": [e.to_dict() for e in pagination.items],
+            "total": pagination.total,
+            "page": page,
+            "per_page": per_page,
+            "pages": pagination.pages
+        }), 200
+    
     lista = estudiantes.listar_estudiantes()
     return jsonify([e.to_dict() for e in lista]), 200
 

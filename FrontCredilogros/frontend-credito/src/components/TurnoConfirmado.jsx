@@ -13,15 +13,17 @@ export default function TurnoConfirmado({ data }) {
   const fetchPosicion = async () => {
     try {
       const resCola = await fetch(`${API_URL}/turnos/cola`);
-      const cola = await resCola.json();
+      const colaData = await resCola.json();
+      const cola = Array.isArray(colaData) ? colaData : colaData.items || [];
       
       const pendientes = cola.filter(t => t.estado === "pendiente");
       const index = pendientes.findIndex(t => t.id_turno === turno?.id_turno);
       setPosicionCola(index !== -1 ? index + 1 : null);
 
-      const resActual = await fetch(`${API_URL}/turnos/?estado=en atención`);
+      const resActual = await fetch(`${API_URL}/turnos/?estado=${encodeURIComponent("en atención")}`);
       const turnoActualData = await resActual.json();
-      setTurnoActual(turnoActualData[0] || null);
+      const actualData = Array.isArray(turnoActualData) ? turnoActualData : turnoActualData.items || [];
+      setTurnoActual(actualData[0] || null);
     } catch (err) {
       console.error(err);
     }
@@ -87,15 +89,8 @@ export default function TurnoConfirmado({ data }) {
         <div style={styles.turnoBox}>
           <div style={styles.turnoMain}>
             <p style={styles.turnoLabel}>Tu Turno</p>
-            <p style={styles.turnoNumber}>#{turno?.id_turno || "—"}</p>
+            <p style={styles.turnoNumber}>#{posicionCola || "—"}</p>
           </div>
-          
-          {posicionCola && (
-            <div style={styles.posicionBox}>
-              <p style={styles.posicionLabel}>Posición en cola</p>
-              <p style={styles.posicionNumber}>#{posicionCola}</p>
-            </div>
-          )}
         </div>
 
         <div style={styles.infoCard}>

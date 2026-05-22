@@ -24,10 +24,11 @@ export default function IdentificacionEstudiante({ onIdentificado }) {
     setCargando(true);
 
     try {
-      const res = await fetch(`${API_URL}/estudiantes/`);
+      const res = await fetch(`${API_URL}/estudiantes/?paginated=false`);
       const data = await res.json();
+      const estudiantes = Array.isArray(data) ? data : data.items || [];
       
-      const estudiante = data.find(e => e.cedula === cedula.trim());
+      const estudiante = estudiantes.find(e => e.cedula === cedula.trim());
       
       if (estudiante) {
         setEstudiante(estudiante);

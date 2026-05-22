@@ -4,9 +4,9 @@ class SolicitudCredito(db.Model):
     __tablename__ = "solicitudes_credito"
 
     id_solicitud = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_estudiante = db.Column(db.Integer, db.ForeignKey("estudiantes.id_estudiante"), nullable=False)
+    id_estudiante = db.Column(db.Integer, db.ForeignKey("estudiantes.id_estudiante"), nullable=False, index=True)
     fecha_solicitud = db.Column(db.Date, nullable=False)
-    estado = db.Column(db.Enum("pendiente", "en estudio", "aprobado", "rechazado"), default="pendiente")
+    estado = db.Column(db.Enum("pendiente", "en estudio", "aprobado", "rechazado"), default="pendiente", index=True)
     monto_solicitado = db.Column(db.Numeric(12, 2), nullable=True)
     monto_aprobado = db.Column(db.Numeric(12, 2), nullable=True)
 
